@@ -174,6 +174,7 @@ function getFirstName(name) {
   if (!name) return "";
   return name.split(" ")[0];
 }
+console.log(user);
 
 
   return (
