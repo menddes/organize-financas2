@@ -13,22 +13,36 @@ import { useToast } from '@/components/ui/use-toast';
 import { markAsPaid } from '@/services/scheduledTransactionService';
 import { ScheduledTransaction } from '@/types';
 import { motion } from 'framer-motion';
+function getGreeting() {
+  const now = new Date();
+  const hour = now.getHours();
+  if (hour < 12) return "Bom dia";
+  if (hour < 18) return "Boa tarde";
+  return "Boa noite";
+}
+
+function getFirstName(name) {
+  if (!name) return "";
+  return name.split(" ")[0];
+}
 
 const Index = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const {
-    filteredTransactions,
-    transactions,
-    setCustomDateRange,
-    goals,
-    hideValues,
-    toggleHideValues,
-    getTransactions,
-    getGoals,
-    deleteTransaction,
-    scheduledTransactions
-  } = useAppContext();
+  user,
+  filteredTransactions,
+  transactions,
+  setCustomDateRange,
+  goals,
+  hideValues,
+  toggleHideValues,
+  getTransactions,
+  getGoals,
+  deleteTransaction,
+  scheduledTransactions
+} = useAppContext();
+
   const { t } = usePreferences();
   
   const [transactionDialogOpen, setTransactionDialogOpen] = useState(false);
@@ -188,6 +202,12 @@ const Index = () => {
           initial="hidden"
           animate="visible"
         >
+          {user && (
+  <h1 className="text-lg font-bold text-primary p-4">
+    {getGreeting()}, {getFirstName(user?.user_metadata?.name)}!
+  </h1>
+)}
+
           {/* Header com navegação de mês e toggle de visibilidade */}
           <DashboardHeader
             currentMonth={currentMonth}
