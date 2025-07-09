@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -12,30 +12,12 @@ interface SidebarProps {
   onConfigClick?: () => void;
 }
 
-// Função para alternar tema (deve ficar fora do componente)
-function toggleTheme() {
-  const html = document.documentElement;
-  html.classList.toggle('dark');
-  if (html.classList.contains('dark')) {
-    localStorage.setItem('theme', 'dark');
-  } else {
-    localStorage.setItem('theme', 'light');
-  }
-}
-
 const Sidebar: React.FC<SidebarProps> = ({ onProfileClick, onConfigClick }) => {
   const { user, logout } = useAppContext();
   const { t } = usePreferences();
   const { isAdmin } = useUserRole();
   const navigate = useNavigate();
   const location = useLocation();
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
-    }
-  }, []);
 
   // Utilitários para cumprimento
   function getGreeting() {
@@ -46,7 +28,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onProfileClick, onConfigClick }) => {
     return "Boa noite";
   }
 
-  function getFirstName(name) {
+  function getFirstName(name: string) {
     if (!name) return "";
     return name.split(" ")[0];
   }
@@ -83,15 +65,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onProfileClick, onConfigClick }) => {
 
     return (
       <div className="hidden md:flex h-screen w-64 flex-col bg-background border-r">
-        <div className="p-6 border-b flex items-center justify-between">
+        <div className="p-6 border-b">
           <h1 className="text-2xl font-bold text-primary">Admin Panel</h1>
-          <button
-            onClick={toggleTheme}
-            className="ml-2 p-2 rounded text-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition"
-            title="Alternar tema"
-          >
-            🌞/🌙
-          </button>
         </div>
         <nav className="flex-1 p-4 space-y-2">
           {adminMenuItems.map((item, index) => (
@@ -154,17 +129,10 @@ const Sidebar: React.FC<SidebarProps> = ({ onProfileClick, onConfigClick }) => {
 
   return (
     <div className="hidden md:flex h-screen w-64 flex-col bg-background border-r">
-      <div className="p-6 border-b flex items-center justify-between">
+      <div className="p-6 border-b">
         <h1 className="text-2xl font-bold text-primary">
           {getGreeting()}, {getFirstName(user?.user_metadata?.name)}!
         </h1>
-        <button
-          onClick={toggleTheme}
-          className="ml-2 p-2 rounded text-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition"
-          title="Alternar tema"
-        >
-          🌞/🌙
-        </button>
       </div>
       <nav className="flex-1 p-4 space-y-2">
         {menuItems.map((item) => (
