@@ -1,5 +1,4 @@
-
-
+import React, { useEffect } from "react";
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -7,37 +6,16 @@ import { useAppContext } from '@/contexts/AppContext';
 import { usePreferences } from '@/contexts/PreferencesContext';
 import { useUserRole } from '@/hooks/useUserRole';
 import { LayoutDashboard, Receipt, BarChart3, Target, User, Settings, FolderOpen, Calendar, Crown, LogOut, Shield } from 'lucide-react';
-import React, { useEffect } from "react";
-
-const Sidebar = (props) => {
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
-    }
-  }, []);
-
-
-function toggleTheme() {
-  const html = document.documentElement;
-  html.classList.toggle('dark');
-  if (html.classList.contains('dark')) {
-    localStorage.setItem('theme', 'dark');
-  } else {
-    localStorage.setItem('theme', 'light');
-  }
-}
-
-
 
 interface SidebarProps {
   onProfileClick?: () => void;
   onConfigClick?: () => void;
 }
+
+// Função para alternar tema (deve ficar fora do componente)
 function toggleTheme() {
   const html = document.documentElement;
   html.classList.toggle('dark');
-  // Salva a preferência do usuário
   if (html.classList.contains('dark')) {
     localStorage.setItem('theme', 'dark');
   } else {
@@ -51,7 +29,28 @@ const Sidebar: React.FC<SidebarProps> = ({ onProfileClick, onConfigClick }) => {
   const { isAdmin } = useUserRole();
   const navigate = useNavigate();
   const location = useLocation();
-  
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+    }
+  }, []);
+
+  // Utilitários para cumprimento
+  function getGreeting() {
+    const now = new Date();
+    const hour = now.getHours();
+    if (hour < 12) return "Bom dia";
+    if (hour < 18) return "Boa tarde";
+    return "Boa noite";
+  }
+
+  function getFirstName(name) {
+    if (!name) return "";
+    return name.split(" ")[0];
+  }
+
   // Verificar se estamos na página de administração
   const isAdminPage = location.pathname === '/admin';
 
@@ -84,12 +83,16 @@ const Sidebar: React.FC<SidebarProps> = ({ onProfileClick, onConfigClick }) => {
 
     return (
       <div className="hidden md:flex h-screen w-64 flex-col bg-background border-r">
-        {/* Logo/Header */}
-        <div className="p-6 border-b">
+        <div className="p-6 border-b flex items-center justify-between">
           <h1 className="text-2xl font-bold text-primary">Admin Panel</h1>
+          <button
+            onClick={toggleTheme}
+            className="ml-2 p-2 rounded text-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+            title="Alternar tema"
+          >
+            🌞/🌙
+          </button>
         </div>
-
-        {/* Navigation */}
         <nav className="flex-1 p-4 space-y-2">
           {adminMenuItems.map((item, index) => (
             <Button
@@ -102,8 +105,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onProfileClick, onConfigClick }) => {
               {item.label}
             </Button>
           ))}
-          
-          {/* Botão Perfil que executa função ao invés de navegar */}
           <Button
             variant="ghost"
             className="w-full justify-start gap-3 px-4 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
@@ -113,8 +114,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onProfileClick, onConfigClick }) => {
             Perfil
           </Button>
         </nav>
-
-        {/* Bottom Navigation - Apenas Logout */}
         <div className="p-4 border-t space-y-2">
           <Button
             variant="ghost"
@@ -131,87 +130,28 @@ const Sidebar: React.FC<SidebarProps> = ({ onProfileClick, onConfigClick }) => {
 
   // Menu padrão para usuários normais
   const defaultMenuItems = [
-    {
-      icon: LayoutDashboard,
-      label: t('nav.dashboard'),
-      href: '/dashboard'
-    },
-    {
-      icon: Receipt,
-      label: t('nav.transactions'),
-      href: '/transactions'
-    },
-    {
-      icon: FolderOpen,
-      label: t('nav.categories'),
-      href: '/categories'
-    },
-    {
-      icon: Target,
-      label: t('nav.goals'),
-      href: '/goals'
-    },
-    {
-      icon: Calendar,
-      label: t('schedule.title'),
-      href: '/schedule'
-    },
-    {
-      icon: BarChart3,
-      label: t('nav.reports'),
-      href: '/reports'
-    },
-    {
-      icon: Crown,
-      label: t('nav.plans'),
-      href: '/plans'
-    },
+    { icon: LayoutDashboard, label: t('nav.dashboard'), href: '/dashboard' },
+    { icon: Receipt, label: t('nav.transactions'), href: '/transactions' },
+    { icon: FolderOpen, label: t('nav.categories'), href: '/categories' },
+    { icon: Target, label: t('nav.goals'), href: '/goals' },
+    { icon: Calendar, label: t('schedule.title'), href: '/schedule' },
+    { icon: BarChart3, label: t('nav.reports'), href: '/reports' },
+    { icon: Crown, label: t('nav.plans'), href: '/plans' },
   ];
 
-  // Adicionar item admin apenas se o usuário for admin e não estiver na página admin
   let menuItems = [...defaultMenuItems];
   if (isAdmin && !isAdminPage) {
-    const adminMenuItem = {
-      icon: Shield,
-      label: 'Admin',
-      href: '/admin'
-    };
+    const adminMenuItem = { icon: Shield, label: 'Admin', href: '/admin' };
     menuItems.push(adminMenuItem);
   }
 
   const bottomMenuItems = [
-    {
-      icon: User,
-      label: t('nav.profile'),
-      href: '/profile'
-    },
-    {
-      icon: Settings,
-      label: t('nav.settings'),
-      href: '/settings'
-    },
+    { icon: User, label: t('nav.profile'), href: '/profile' },
+    { icon: Settings, label: t('nav.settings'), href: '/settings' },
   ];
 
   if (!user) return null;
- function getGreeting() {
-  const now = new Date();
-  const hour = now.getHours();
 
-  if (hour < 12) return "Bom dia";
-  if (hour < 18) return "Boa tarde";
-  return "Boa noite";
-}
-
-function getFirstName(name) {
-  if (!name) return "";
-  return name.split(" ")[0];
-}
-
-console.log("USER DEBUG:", user);
-
-
-
-  
   return (
     <div className="hidden md:flex h-screen w-64 flex-col bg-background border-r">
       <div className="p-6 border-b flex items-center justify-between">
@@ -226,18 +166,6 @@ console.log("USER DEBUG:", user);
           🌞/🌙
         </button>
       </div>
-      {/* ...restante do sidebar */}
-    </div>
-  );
-};
-
-export default Sidebar;
-
-
-
-
-
-      {/* Navigation */}
       <nav className="flex-1 p-4 space-y-2">
         {menuItems.map((item) => (
           <NavLink
@@ -258,8 +186,6 @@ export default Sidebar;
           </NavLink>
         ))}
       </nav>
-
-      {/* Bottom Navigation */}
       <div className="p-4 border-t space-y-2">
         {bottomMenuItems.map((item) => (
           <NavLink
@@ -279,8 +205,6 @@ export default Sidebar;
             {item.label}
           </NavLink>
         ))}
-        
-        {/* Logout Button */}
         <Button
           variant="ghost"
           className="w-full justify-start gap-3 px-4 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
