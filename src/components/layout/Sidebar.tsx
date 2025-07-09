@@ -165,8 +165,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onProfileClick, onConfigClick }) => {
   return (
     <div className="hidden md:flex h-screen w-64 flex-col bg-background border-r">
       {/* Logo/Header */}
-      <div className="p-6 border-b">
-        <h1 className="text-2xl font-bold text-primary">Sua Logo</h1>
+     <div className="p-6 border-b">
+  <img src="/logo.png" alt="Organize Finanças" style={{ height: 40 }} />
       </div>
 
       {/* Navigation */}
