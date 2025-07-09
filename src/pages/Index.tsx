@@ -13,6 +13,8 @@ import { useToast } from '@/components/ui/use-toast';
 import { markAsPaid } from '@/services/scheduledTransactionService';
 import { ScheduledTransaction } from '@/types';
 import { motion } from 'framer-motion';
+
+// Funções de cumprimento
 function getGreeting() {
   const now = new Date();
   const hour = now.getHours();
@@ -30,19 +32,18 @@ const Index = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const {
-  user,
-  filteredTransactions,
-  transactions,
-  setCustomDateRange,
-  goals,
-  hideValues,
-  toggleHideValues,
-  getTransactions,
-  getGoals,
-  deleteTransaction,
-  scheduledTransactions
-} = useAppContext();
-
+    user,
+    filteredTransactions,
+    transactions,
+    setCustomDateRange,
+    goals,
+    hideValues,
+    toggleHideValues,
+    getTransactions,
+    getGoals,
+    deleteTransaction,
+    scheduledTransactions
+  } = useAppContext();
   const { t } = usePreferences();
   
   const [transactionDialogOpen, setTransactionDialogOpen] = useState(false);
@@ -52,12 +53,12 @@ const Index = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [currentGoalIndex, setCurrentGoalIndex] = useState(0);
   
-  console.log("Dashboard rendered with:", {
-    transactionsCount: transactions.length, 
-    filteredTransactionsCount: filteredTransactions.length,
-    goalsCount: goals.length,
-    scheduledTransactionsCount: scheduledTransactions.length
-  });
+  // console.log("Dashboard rendered with:", {
+  //   transactionsCount: transactions.length, 
+  //   filteredTransactionsCount: filteredTransactions.length,
+  //   goalsCount: goals.length,
+  //   scheduledTransactionsCount: scheduledTransactions.length
+  // });
   
   const totalIncome = calculateTotalIncome(filteredTransactions);
   const totalExpenses = calculateTotalExpenses(filteredTransactions);
@@ -66,14 +67,14 @@ const Index = () => {
   // Use this effect to force a refetch of transactions and goals when the page loads
   useEffect(() => {
     const loadData = async () => {
-      console.log("Dashboard: Loading initial data...");
+      // console.log("Dashboard: Loading initial data...");
       await getTransactions();
       await getGoals();
       
       const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
       const lastDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0, 23, 59, 59);
       setCustomDateRange(firstDay, lastDay);
-      console.log("Dashboard: Initial data loaded");
+      // console.log("Dashboard: Initial data loaded");
     };
     
     loadData();
@@ -81,22 +82,22 @@ const Index = () => {
 
   // Add auto-refresh mechanism to keep dashboard updated
   useEffect(() => {
-    console.log("Dashboard: Setting up auto-refresh interval...");
+    // console.log("Dashboard: Setting up auto-refresh interval...");
     const interval = setInterval(async () => {
-      console.log("Dashboard: Auto-refreshing data...");
+      // console.log("Dashboard: Auto-refreshing data...");
       try {
         await Promise.all([
           getTransactions(),
           getGoals()
         ]);
-        console.log("Dashboard: Auto-refresh completed");
+        // console.log("Dashboard: Auto-refresh completed");
       } catch (error) {
-        console.error("Dashboard: Auto-refresh error:", error);
+        // console.error("Dashboard: Auto-refresh error:", error);
       }
     }, 30000); // Refresh every 30 seconds
 
     return () => {
-      console.log("Dashboard: Clearing auto-refresh interval");
+      // console.log("Dashboard: Clearing auto-refresh interval");
       clearInterval(interval);
     };
   }, [getTransactions, getGoals]);
@@ -131,13 +132,13 @@ const Index = () => {
       });
       
       // Refresh transactions and goals
-      console.log("Dashboard: Refreshing data after delete...");
+      // console.log("Dashboard: Refreshing data after delete...");
       await Promise.all([
         getTransactions(),
         getGoals()
       ]);
     } catch (error) {
-      console.error('Error deleting transaction:', error);
+      // console.error('Error deleting transaction:', error);
       toast({
         title: t('common.error'),
         description: t('transactions.deleteError'),
@@ -154,7 +155,7 @@ const Index = () => {
         description: t('schedule.transaction_marked_as_paid')
       });
       // Refresh data to update the alert
-      console.log("Dashboard: Refreshing data after marking as paid...");
+      // console.log("Dashboard: Refreshing data after marking as paid...");
       await Promise.all([
         getTransactions(),
         getGoals()
@@ -202,11 +203,12 @@ const Index = () => {
           initial="hidden"
           animate="visible"
         >
+          {/* Cumprimento do usuário */}
           {user && (
-  <h1 className="text-lg font-bold text-primary p-4">
-    {getGreeting()}, {getFirstName(user?.user_metadata?.name)}!
-  </h1>
-)}
+            <h1 className="text-lg font-bold text-primary p-4">
+              {getGreeting()}, {getFirstName(user?.user_metadata?.name)}!
+            </h1>
+          )}
 
           {/* Header com navegação de mês e toggle de visibilidade */}
           <DashboardHeader
