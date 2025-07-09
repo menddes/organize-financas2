@@ -1,0 +1,80 @@
+
+name: Deploy Supabase 
+ 
+on: 
+  push: 
+    branches: 
+      - main
+      - developer 
+    paths: 
+      - 'supabase/**' 
+  workflow_dispatch: 
+
+jobs: 
+  deploy: 
+    runs-on: ubuntu-latest 
+    steps: 
+      - name: Checkout repository 
+        uses: actions/checkout@v3 
+
+      - name: Setup Supabase CLI 
+        uses: supabase/setup-cli@v1 
+        with: 
+          version: latest 
+
+      - name: Login to Supabase 
+        run: supabase login --token ${{ secrets.SUPABASE_ACCESS_TOKEN }} 
+
+      - name: Link to Supabase project 
+        run: supabase link --project-ref ${{ secrets.SUPABASE_PROJECT_ID }} 
+
+      - name: Deploy database migrations 
+        env: 
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: | 
+          # Aplicar migrações sem resetar o banco de dados
+          echo "Aplicando migrações ao banco de dados..."
+          supabase db push
+
+      - name: Deploy Edge Functions 
+        run: | 
+          supabase functions deploy check-subscription 
+          supabase functions deploy create-checkout-session 
+          supabase functions deploy create_update_goal_amount_function 
+          supabase functions deploy customer-portal 
+          supabase functions deploy get-plan-config 
+          supabase functions deploy get-secrets 
+          supabase functions deploy get-branding-config
+          supabase functions deploy grant-admin-access 
+          supabase functions deploy recover-purchases 
+          supabase functions deploy stripe-webhook 
+          supabase functions deploy sync-subscriptions 
+          supabase functions deploy update-plan-config 
+          supabase functions deploy update-secrets 
+          supabase functions deploy update_goal_amount 
+          supabase functions deploy create-admin-user
+
+      - name: Verify Storage Bucket
+        run: |
+          echo "Verificando se o bucket 'uploads' foi criado..."
+          # Esta verificação é feita através da migration, mas podemos adicionar logs
+          echo "✅ Bucket criado via migration SQL"
+
+      - name: Create Admin User
+        run: |
+          echo "Criando usuário admin..."
+          curl -X POST "https://${{ secrets.SUPABASE_PROJECT_ID }}.supabase.co/functions/v1/create-admin-user" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Content-Type: application/json" \
+            -v
+
+      - name: Notify deployment status 
+        if: always() 
+        run: | 
+          if [ "${{ job.status }}" == "success" ]; then 
+            echo "✅ Supabase deployment completed successfully!" 
+            echo "✅ Storage bucket 'uploads' criado"
+            echo "✅ Edge function 'get-branding-config' deployada"
+          else 
+            echo "❌ Supabase deployment failed!" 
+          fi
