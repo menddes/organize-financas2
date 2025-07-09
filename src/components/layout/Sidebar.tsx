@@ -161,13 +161,30 @@ const Sidebar: React.FC<SidebarProps> = ({ onProfileClick, onConfigClick }) => {
   ];
 
   if (!user) return null;
+  function getGreeting() {
+  const now = new Date();
+  const hour = now.getHours();
+
+  if (hour < 12) return "Bom dia";
+  if (hour < 18) return "Boa tarde";
+  return "Boa noite";
+}
+
+function getFirstName(name) {
+  if (!name) return "";
+  return name.split(" ")[0];
+}
+
 
   return (
     <div className="hidden md:flex h-screen w-64 flex-col bg-background border-r">
       {/* Logo/Header */}
-     <div className="p-6 border-b">
-  <img src="/logo.png" alt="Organize Finanças" style={{ height: 40 }} />
-      </div>
+ <div className="p-6 border-b">
+  <h1 className="text-2xl font-bold text-primary">
+    {getGreeting()}, {getFirstName(user?.name)}!
+  </h1>
+</div>
+
 
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-2">
