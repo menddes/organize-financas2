@@ -161,7 +161,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onProfileClick, onConfigClick }) => {
   ];
 
   if (!user) return null;
-  function getGreeting() {
+ function getGreeting() {
   const now = new Date();
   const hour = now.getHours();
 
@@ -174,6 +174,7 @@ function getFirstName(name) {
   if (!name) return "";
   return name.split(" ")[0];
 }
+
 console.log("USER DEBUG:", user);
 
 
@@ -181,11 +182,12 @@ console.log("USER DEBUG:", user);
   return (
     <div className="hidden md:flex h-screen w-64 flex-col bg-background border-r">
       {/* Logo/Header */}
- <div className="p-6 border-b">
+<div className="p-6 border-b">
   <h1 className="text-2xl font-bold text-primary">
-    {getGreeting()}, {getFirstName(user?.name)}!
+    {getGreeting()}, {getFirstName(user?.user_metadata?.name)}!
   </h1>
 </div>
+
 
 
       {/* Navigation */}
