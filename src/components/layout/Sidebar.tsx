@@ -7,10 +7,28 @@ import { useAppContext } from '@/contexts/AppContext';
 import { usePreferences } from '@/contexts/PreferencesContext';
 import { useUserRole } from '@/hooks/useUserRole';
 import { LayoutDashboard, Receipt, BarChart3, Target, User, Settings, FolderOpen, Calendar, Crown, LogOut, Shield } from 'lucide-react';
+import { useEffect } from "react";
+
+useEffect(() => {
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme) {
+    document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+  }
+}, []);
 
 interface SidebarProps {
   onProfileClick?: () => void;
   onConfigClick?: () => void;
+}
+function toggleTheme() {
+  const html = document.documentElement;
+  html.classList.toggle('dark');
+  // Salva a preferência do usuário
+  if (html.classList.contains('dark')) {
+    localStorage.setItem('theme', 'dark');
+  } else {
+    localStorage.setItem('theme', 'light');
+  }
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ onProfileClick, onConfigClick }) => {
@@ -182,11 +200,19 @@ console.log("USER DEBUG:", user);
   return (
     <div className="hidden md:flex h-screen w-64 flex-col bg-background border-r">
       {/* Logo/Header */}
-<div className="p-6 border-b">
+<div className="p-6 border-b flex items-center justify-between">
   <h1 className="text-2xl font-bold text-primary">
     {getGreeting()}, {getFirstName(user?.user_metadata?.name)}!
   </h1>
+  <button
+    onClick={toggleTheme}
+    className="ml-2 p-2 rounded text-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+    title="Alternar tema"
+  >
+    🌞/🌙
+  </button>
 </div>
+
 
 
 
