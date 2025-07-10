@@ -1,4 +1,4 @@
-  import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { usePreferences } from '@/contexts/PreferencesContext';
@@ -20,7 +20,7 @@ const MobileNavBar: React.FC<MobileNavBarProps> = ({
   const location = useLocation();
   const { isAdmin } = useUserRole();
   const [isQuickActionsOpen, setIsQuickActionsOpen] = useState(false);
-  
+
   // Verificar se estamos na página de administração
   const isAdminPage = location.pathname === '/admin';
 
@@ -135,10 +135,10 @@ const MobileNavBar: React.FC<MobileNavBarProps> = ({
       href: '/settings'
     }
   ];
-  
+
   // Determinar quais itens de menu mostrar
   let menuItems = defaultMenuItems;
-  
+
   // Se for admin mas não estiver na página de admin, adicionar o item admin ao menu
   if (isAdmin && !isAdminPage) {
     const adminMenuItem = {
@@ -146,7 +146,7 @@ const MobileNavBar: React.FC<MobileNavBarProps> = ({
       label: 'Admin',
       href: '/admin'
     };
-    
+
     // Adicionar o item admin antes do último item (settings)
     menuItems = [...defaultMenuItems.slice(0, -1), adminMenuItem, defaultMenuItems[defaultMenuItems.length - 1]];
   }
