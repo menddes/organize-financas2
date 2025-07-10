@@ -12,6 +12,7 @@ import {
 import { DatePicker } from '@/components/ui/date-picker';
 import { ReportFormat } from '@/types';
 import { usePreferences } from '@/contexts/PreferencesContext';
+import jsPDF from 'jspdf'; // <- Adicionei o import do jsPDF aqui
 
 interface ReportFiltersProps {
   reportType: string;
@@ -33,6 +34,17 @@ const ReportFilters: React.FC<ReportFiltersProps> = ({
   onDownload
 }) => {
   const { t } = usePreferences();
+
+  // Função para baixar PDF simples
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF();
+    doc.setFont('helvetica');
+    doc.setFontSize(16);
+    doc.text('Relatório Financeiro', 10, 18);
+    doc.setFontSize(12);
+    doc.text('Este é um PDF de teste. Depois podemos colocar os dados do relatório aqui.', 10, 30);
+    doc.save('relatorio.pdf');
+  };
 
   return (
     <Card className="mb-8">
@@ -75,7 +87,7 @@ const ReportFilters: React.FC<ReportFiltersProps> = ({
             {t('reports.downloadCSV')}
           </Button>
           <Button 
-            onClick={() => onDownload('pdf')}
+            onClick={handleDownloadPDF}
             className="flex items-center gap-2"
           >
             <File className="h-4 w-4" />
