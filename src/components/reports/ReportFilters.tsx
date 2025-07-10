@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
-import jsPDF from 'jspdf'; // IMPORTANTE!
+import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileText, File } from 'lucide-react';
-import {
+import { 
   Select,
   SelectContent,
   SelectItem,
@@ -34,16 +33,6 @@ const ReportFilters: React.FC<ReportFiltersProps> = ({
   onDownload
 }) => {
   const { t } = usePreferences();
-
-  // Função para baixar PDF
-  const handleDownloadPDF = () => {
-    const doc = new jsPDF();
-    doc.text('Relatório Financeiro', 10, 10);
-    doc.text(`Tipo de relatório: ${reportType}`, 10, 20);
-    doc.text(`Início: ${startDate ? startDate.toLocaleDateString() : '-'}`, 10, 30);
-    doc.text(`Fim: ${endDate ? endDate.toLocaleDateString() : '-'}`, 10, 40);
-    doc.save('relatorio.pdf');
-  };
 
   return (
     <Card className="mb-8">
@@ -86,7 +75,7 @@ const ReportFilters: React.FC<ReportFiltersProps> = ({
             {t('reports.downloadCSV')}
           </Button>
           <Button 
-            onClick={handleDownloadPDF}
+            onClick={() => onDownload('pdf')}
             className="flex items-center gap-2"
           >
             <File className="h-4 w-4" />
