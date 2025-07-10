@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import jsPDF from 'jspdf'; // <--- Aqui importa o jsPDF!
+import jsPDF from 'jspdf'; // <-- IMPORTANTE: precisa estar instalado!
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileText, File } from 'lucide-react';
@@ -21,7 +21,7 @@ interface ReportFiltersProps {
   setStartDate: (date: Date | undefined) => void;
   endDate: Date | undefined;
   setEndDate: (date: Date | undefined) => void;
-  onDownload: (format: ReportFormat) => void; // Mantém para o CSV
+  onDownload?: (format: ReportFormat) => void; // Deixe como opcional para usarmos a função local
 }
 
 const ReportFilters: React.FC<ReportFiltersProps> = ({
@@ -35,18 +35,25 @@ const ReportFilters: React.FC<ReportFiltersProps> = ({
 }) => {
   const { t } = usePreferences();
 
-  // Função para gerar e baixar o PDF simples
+  // Função para download do PDF
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
-    doc.setFont('helvetica');
-    doc.setFontSize(18);
-    doc.text(t('reports.filters') || 'Relatório', 10, 18);
+
+    // Adapte esses dados conforme o relatório real!
+    doc.setFontSize(16);
+    doc.text('Relatório Financeiro', 15, 15);
     doc.setFontSize(12);
-    doc.text(`${t('reports.reportType')}: ${reportType}`, 10, 30);
-    doc.text(`${t('reports.startDate')}: ${startDate ? startDate.toLocaleDateString() : '-'}`, 10, 38);
-    doc.text(`${t('reports.endDate')}: ${endDate ? endDate.toLocaleDateString() : '-'}`, 10, 46);
-    // Adicione mais campos ou resumos conforme quiser...
+    doc.text(`Tipo: ${reportType}`, 15, 30);
+    doc.text(`Período: ${startDate ? startDate.toLocaleDateString() : ''} até ${endDate ? endDate.toLocaleDateString() : ''}`, 15, 40);
+    doc.text('---', 15, 50);
+    doc.text('Aqui você pode adicionar dados da tabela/relatório!', 15, 60);
+
     doc.save('relatorio.pdf');
+  };
+
+  // Função para download CSV pode continuar usando o onDownload('csv')
+  const handleDownloadCSV = () => {
+    if (onDownload) onDownload('csv');
   };
 
   return (
@@ -83,7 +90,7 @@ const ReportFilters: React.FC<ReportFiltersProps> = ({
         <div className="flex flex-wrap justify-end gap-2 mt-4">
           <Button 
             variant="outline" 
-            onClick={() => onDownload('csv')}
+            onClick={handleDownloadCSV}
             className="flex items-center gap-2"
           >
             <FileText className="h-4 w-4" />
