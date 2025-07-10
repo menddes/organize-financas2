@@ -15,6 +15,19 @@ interface MobileHeaderProps {
   theme?: 'light' | 'dark';
 }
 
+// Funções para saudação
+function getGreeting() {
+  const now = new Date();
+  const hour = now.getHours();
+  if (hour < 12) return "Bom dia";
+  if (hour < 18) return "Boa tarde";
+  return "Boa noite";
+}
+function getFirstName(name?: string) {
+  if (!name) return "";
+  return name.split(" ")[0];
+}
+
 const MobileHeader: React.FC<MobileHeaderProps> = ({
   title,
   hideValues,
@@ -36,45 +49,53 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
   };
 
   return (
-    <div className="flex items-center justify-between px-4 py-3 border-b bg-background md:hidden">
-      <div className="flex items-center gap-2">
-        {showBackButton && (
+    <div className="flex flex-col px-4 py-3 border-b bg-background md:hidden">
+      {/* Saudação do usuário */}
+      {user?.user_metadata?.name && (
+        <span className="text-base font-semibold text-primary mb-1">
+          {getGreeting()}, {getFirstName(user.user_metadata.name)}!
+        </span>
+      )}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          {showBackButton && (
+            <button
+              onClick={onBackClick ? onBackClick : () => navigate(-1)}
+              className="p-2 rounded hover:bg-accent"
+              title="Voltar"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+          )}
+          <span className="text-lg font-bold truncate">{title}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          {typeof hideValues === 'boolean' && toggleHideValues && (
+            <button
+              onClick={toggleHideValues}
+              className="p-2 rounded hover:bg-accent"
+              title={hideValues ? t('dashboard.show_values') : t('dashboard.hide_values')}
+            >
+              {hideValues ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </button>
+          )}
+          {onThemeToggle && (
+            <button
+              onClick={onThemeToggle}
+              className="p-2 rounded hover:bg-accent"
+              title={theme === 'dark' ? t('theme.light_mode') : t('theme.dark_mode')}
+            >
+              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </button>
+          )}
           <button
-            onClick={onBackClick ? onBackClick : () => navigate(-1)}
+            onClick={onLogout ? onLogout : handleLogout}
             className="p-2 rounded hover:bg-accent"
-            title="Voltar"
+            title={t('settings.logout')}
           >
-            <ChevronLeft className="h-5 w-5" />
+            <LogOut className="h-5 w-5" />
           </button>
-        )}
-        <span className="text-lg font-bold truncate">{title}</span>
-      </div>
-      <div className="flex items-center gap-2">
-        {typeof hideValues === 'boolean' && toggleHideValues && (
-          <button
-            onClick={toggleHideValues}
-            className="p-2 rounded hover:bg-accent"
-            title={hideValues ? t('dashboard.show_values') : t('dashboard.hide_values')}
-          >
-            {hideValues ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-          </button>
-        )}
-        {onThemeToggle && (
-          <button
-            onClick={onThemeToggle}
-            className="p-2 rounded hover:bg-accent"
-            title={theme === 'dark' ? t('theme.light_mode') : t('theme.dark_mode')}
-          >
-            {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          </button>
-        )}
-        <button
-          onClick={onLogout ? onLogout : handleLogout}
-          className="p-2 rounded hover:bg-accent"
-          title={t('settings.logout')}
-        >
-          <LogOut className="h-5 w-5" />
-        </button>
+        </div>
       </div>
     </div>
   );
