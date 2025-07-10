@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -8,6 +7,21 @@ import { LayoutDashboard, Receipt, Settings, Crown, Plus, TrendingUp, TrendingDo
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAppContext } from '@/contexts/AppContext'; // NOVO IMPORT
+
+// Funções de saudação
+function getGreeting() {
+  const now = new Date();
+  const hour = now.getHours();
+  if (hour < 12) return "Bom dia";
+  if (hour < 18) return "Boa tarde";
+  return "Boa noite";
+}
+
+function getFirstName(name) {
+  if (!name) return "";
+  return name.split(" ")[0];
+}
 
 interface MobileNavBarProps {
   onAddTransaction?: (type: 'income' | 'expense') => void;
@@ -17,6 +31,7 @@ const MobileNavBar: React.FC<MobileNavBarProps> = ({
   onAddTransaction
 }) => {
   const { t } = usePreferences();
+  const { user } = useAppContext(); // PEGANDO O USUÁRIO
   const navigate = useNavigate();
   const location = useLocation();
   const { isAdmin } = useUserRole();
@@ -85,6 +100,14 @@ const MobileNavBar: React.FC<MobileNavBarProps> = ({
 
     return (
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t md:hidden">
+        {/* Saudação no topo */}
+        <div className="px-4 pt-2 pb-1">
+          {user && (
+            <span className="text-sm font-semibold text-primary">
+              {getGreeting()}, {getFirstName(user?.user_metadata?.name)}!
+            </span>
+          )}
+        </div>
         <nav className="flex items-center justify-around py-2">
           {adminMenuItems.map((item) => (
             <NavLink
@@ -190,6 +213,14 @@ const MobileNavBar: React.FC<MobileNavBarProps> = ({
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t md:hidden">
+      {/* Saudação no topo */}
+      <div className="px-4 pt-2 pb-1">
+        {user && (
+          <span className="text-sm font-semibold text-primary">
+            {getGreeting()}, {getFirstName(user?.user_metadata?.name)}!
+          </span>
+        )}
+      </div>
       <nav className="flex items-center justify-around py-2">
         {menuItems.map((item, index) => {
           if (item.type === 'quick-actions') {
