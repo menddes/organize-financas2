@@ -1,5 +1,5 @@
-
 import React, { useState } from 'react';
+import jsPDF from 'jspdf'; // <--- Aqui importa o jsPDF!
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileText, File } from 'lucide-react';
@@ -21,7 +21,7 @@ interface ReportFiltersProps {
   setStartDate: (date: Date | undefined) => void;
   endDate: Date | undefined;
   setEndDate: (date: Date | undefined) => void;
-  onDownload: (format: ReportFormat) => void;
+  onDownload: (format: ReportFormat) => void; // Mantém para o CSV
 }
 
 const ReportFilters: React.FC<ReportFiltersProps> = ({
@@ -34,6 +34,20 @@ const ReportFilters: React.FC<ReportFiltersProps> = ({
   onDownload
 }) => {
   const { t } = usePreferences();
+
+  // Função para gerar e baixar o PDF simples
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF();
+    doc.setFont('helvetica');
+    doc.setFontSize(18);
+    doc.text(t('reports.filters') || 'Relatório', 10, 18);
+    doc.setFontSize(12);
+    doc.text(`${t('reports.reportType')}: ${reportType}`, 10, 30);
+    doc.text(`${t('reports.startDate')}: ${startDate ? startDate.toLocaleDateString() : '-'}`, 10, 38);
+    doc.text(`${t('reports.endDate')}: ${endDate ? endDate.toLocaleDateString() : '-'}`, 10, 46);
+    // Adicione mais campos ou resumos conforme quiser...
+    doc.save('relatorio.pdf');
+  };
 
   return (
     <Card className="mb-8">
@@ -76,7 +90,7 @@ const ReportFilters: React.FC<ReportFiltersProps> = ({
             {t('reports.downloadCSV')}
           </Button>
           <Button 
-            onClick={() => onDownload('pdf')}
+            onClick={handleDownloadPDF}
             className="flex items-center gap-2"
           >
             <File className="h-4 w-4" />
